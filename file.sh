@@ -1,1 +1,1 @@
-sed -e "/^#.*deb.*partner$/s/^# //g" /etc/apt/sources.list
+server=en_US.UTF8; sed -i "/^#$server/ c$server" /etc/locale.gen
