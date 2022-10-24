@@ -1,1 +1,1 @@
-sed -i 's/#en_US.UTF8/en_US.UTF8/g' /etc/locale.gen
+sed -i '/2001/s/^#//g' file
