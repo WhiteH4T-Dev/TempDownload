@@ -5,13 +5,6 @@ echo "This installation is for UEFI. Press [Enter] to continue..."
 #Clear the terminal screen
 clear
 
-#Ask the questions
-read -p "Set the console keyboard layout: " A1
-read -p "What disk do you want to partition? " BLOCK_DEVICE
-read -p "Timezone (Region/City): " A2
-
-
-
 #Verify the boot mode
 efi_boot_mode(){
     # if the efivars directory exists we definitely have an EFI BIOS
@@ -28,6 +21,7 @@ fi
 
 #Set the console keyboard layout
 ls /usr/share/kbd/keymaps/**/*.map.gz
+read -p "Set the console keyboard layout: " A1
 if [ -z "$A1" ]; then
     loadkeys us
 else
@@ -40,6 +34,7 @@ timedatectl status
 
 #Create the Partitions
 lsblk
+read -p "What disk do you want to partition? " BLOCK_DEVICE
 fdisk /dev/${BLOCK_DEVICE} << EOF
 m
 g
@@ -88,4 +83,5 @@ arch-chroot /mnt
 
 #Set the Timezone
 ls /usr/share/zoneinfo
+read -p "Timezone (Region/City): " A2
 ln -sf /usr/share/zoneinfo/$A2 /etc/localtime
