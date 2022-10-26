@@ -1,8 +1,16 @@
 #!/bin/bash
-#This installation is for UEFI
 
+echo ""
+echo "This installation is for UEFI. Press [Enter] to continue..."
 #Clear the terminal screen
 clear
+
+#Ask the questions
+read -p "Set the console keyboard layout: " A1
+read -p "What disk do you want to partition? " BLOCK_DEVICE
+read -p "Timezone (Region/City): " A2
+
+
 
 #Verify the boot mode
 efi_boot_mode(){
@@ -20,7 +28,6 @@ fi
 
 #Set the console keyboard layout
 ls /usr/share/kbd/keymaps/**/*.map.gz
-read -p "Set the console keyboard layout: " A1
 if [ -z "$A1" ]; then
     loadkeys us
 else
@@ -33,7 +40,6 @@ timedatectl status
 
 #Create the Partitions
 lsblk
-read -p "What disk do you want to partition? " BLOCK_DEVICE
 fdisk /dev/${BLOCK_DEVICE} << EOF
 m
 g
@@ -60,3 +66,26 @@ t
 w
 EOF
 lsblk
+
+#Format the Partitions
+mkfs.fat -F32 /dev/${BLOCK_DEVICE}1
+mkswap /dev/${BLOCK_DEVICE}2
+swapon /dev/${BLOCK_DEVICE}2
+mkfs.ext4 /dev/${BLOCK_DEVICE}3
+
+#Mount the Paritions
+mount /dev/${BLOCK_DEVICE}3 /mnt
+
+#Install the Base System
+pacstrap /mnt base linux linux-firmware nano
+
+#Generate our Filesystem Table
+genfstab -U /mnt >> /mnt/etc/fstab
+cat /mnt/etc/fstab
+
+#Change root into the new system
+arch-chroot /mnt
+
+#Set the Timezone
+ls /usr/share/zoneinfo
+ln -sf /usr/share/zoneinfo/$A2 /etc/localtime
