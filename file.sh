@@ -121,7 +121,7 @@ sed -i 's/^# %wheel ALL=(ALL:ALL) NOPASSWD: ALL/%wheel ALL=(ALL:ALL) NOPASSWD: A
 
 #Install Networking Tools
 pacman -S efibootmgr networkmanager network-manager-applet wireless_tools wpa_supplicant dialog os-prober mtools dosfstools base-devel linux-headers
-systemctl enable NetworkManager
+systemctl enable NetworkManager --noconfirm
 
 #Install Microcode
 proc_type=$(lscpu)
@@ -147,7 +147,7 @@ elif grep -E "Intel Corporation UHD" <<< ${gpu_type}; then
 fi
 
 #Install Grub
-sudo pacman -S grub
+sudo pacman -S grub --noconfirm
 #Create an EFI directory in our Boot directory
 mkdir /boot/EFI
 #Mount the EFI partition
